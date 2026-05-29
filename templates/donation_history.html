@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block title %}Donation History{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="mb-4">
+    <div class="section-label">Your Impact</div>
+    <h1 style="font-family:'Playfair Display',serif;color:var(--text)">Donation History</h1>
+  </div>
+
+  <div class="row g-4">
+    <!-- Log form -->
+    <div class="col-lg-4">
+      <div class="card p-4 mb-4">
+        <h5 style="font-family:'Playfair Display',serif;color:var(--text);margin-bottom:1.5rem">Log a Donation</h5>
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Date *</label>
+            {% render_field form.date class="form-control" %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Location / Hospital *</label>
+            {% render_field form.location class="form-control" placeholder="e.g. Apollo Hospital, Chennai" %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Units</label>
+            {% render_field form.units class="form-control" %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Notes (optional)</label>
+            {% render_field form.notes class="form-control" placeholder="Any notes..." %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">📸 Photo (optional)</label>
+            {% render_field form.photo class="form-control" %}
+            <div style="font-size:.78rem;color:var(--text-muted);margin-top:.3rem;">Upload a photo from the donation camp</div>
+          </div>
+          <button type="submit" class="btn-blood w-100 justify-content-center">
+            <i class="bi bi-plus-circle"></i> Add Record
+          </button>
+        </form>
+      </div>
+
+      <!-- Badge progress -->
+      <div class="card p-4">
+        <h5 style="font-family:'Playfair Display',serif;color:var(--text);margin-bottom:1rem">Badge Progress</h5>
+        {% with count=donations.count %}
+        <div style="display:flex;flex-direction:column;gap:.55rem">
+          
+          <div class="d-flex justify-content-between align-items-center">
+            <span style="font-size:.85rem;color:{% if donations.count >= 1 %}var(--red);{% else %}var(--text-muted);{% endif %}">🩸 First Drop</span>
+            <span style="font-size:.78rem;color:var(--text-muted)">1 donation {% if donations.count >= 1 %}✅{% endif %}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <span style="font-size:.85rem;color:{% if donations.count >= 3 %}var(--red);{% else %}var(--text-muted);{% endif %}">💪 Helper</span>
+            <span style="font-size:.78rem;color:var(--text-muted)">3 donations {% if donations.count >= 3 %}✅{% endif %}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <span style="font-size:.85rem;color:{% if donations.count >= 5 %}var(--red);{% else %}var(--text-muted);{% endif %}">❤️ Lifesaver</span>
+            <span style="font-size:.78rem;color:var(--text-muted)">5 donations {% if donations.count >= 5 %}✅{% endif %}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <span style="font-size:.85rem;color:{% if donations.count >= 10 %}var(--red);{% else %}var(--text-muted);{% endif %}">🦸 Hero</span>
+            <span style="font-size:.78rem;color:var(--text-muted)">10 donations {% if donations.count >= 10 %}✅{% endif %}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <span style="font-size:.85rem;color:{% if donations.count >= 15 %}var(--red);{% else %}var(--text-muted);{% endif %}">🏆 Champion</span>
+            <span style="font-size:.78rem;color:var(--text-muted)">15 donations {% if donations.count >= 15 %}✅{% endif %}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <span style="font-size:.85rem; color: {% if donations.count >= 20 %}var(--red);{% else %}var(--text-muted);{% endif %}">👑 Life Champion</span>
+            <span style="font-size:.78rem;color:var(--text-muted)">20 donations {% if donations.count >= 20 %}✅{% endif %}</span>
+          </div>
+        </div>
+        {% endwith %}
+      </div>
+    </div>
+
+    <!-- Records -->
+    <div class="col-lg-8">
+      <div class="card p-4">
+        <h5 style="font-family:'Playfair Display',serif;color:var(--text);margin-bottom:1.5rem">
+          All Donations <span style="color:var(--text-muted);font-size:.85rem;font-weight:400">({{ donations.count }} total)</span>
+        </h5>
+        {% if donations %}
+        <div style="display:flex;flex-direction:column;gap:1rem;">
+          {% for d in donations %}
+          <div style="display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--bg-card2);border-radius:14px;border:1px solid var(--border);">
+            {% if d.photo %}
+              <img src="{{ d.photo.url }}" class="donation-photo-thumb gallery-img"
+                   data-caption="{{ d.location }} · {{ d.date }}" alt="Donation photo">
+            {% else %}
+              <div style="width:56px;height:56px;border-radius:10px;background:var(--red-glow);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">🩸</div>
+            {% endif %}
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:600;color:var(--text);">{{ d.location }}</div>
+              <div style="font-size:.82rem;color:var(--text-muted);">{{ d.date }} {{ d.date }} &#160;·&#160; {{ d.units }} {{ d.units }} unit{{ d.units|pluralize }}</div>
+              {% if d.notes %}<div style="font-size:.8rem;color:var(--text-muted);margin-top:.15rem;">{{ d.notes|truncatechars:60 }}</div>{% endif %}
+            </div>
+            <a href="{% url 'download_certificate' d.id %}" class="cert-btn" title="Download e-certificate" download>
+              <i class="bi bi-award"></i> Certificate
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+          <div style="font-size:3.5rem;margin-bottom:1rem;">🩸</div>
+          <h5 style="color:var(--text);">No donations yet</h5>
+          <p style="color:var(--text-muted);">Log your first donation to start earning badges and certificates!</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

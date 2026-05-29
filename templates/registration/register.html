@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="auth-page" style="align-items:flex-start;padding-top:3rem;padding-bottom:3rem;">
+  <div class="auth-card" style="max-width:540px;width:100%;">
+    <div class="auth-logo">🩸</div>
+    <h2 class="auth-title">Join BloodLink</h2>
+    <p class="auth-sub">Create your donor account and start saving lives</p>
+
+    {% if form.errors %}
+    <div class="alert alert-danger mb-3">
+      <strong><i class="bi bi-exclamation-triangle me-1"></i> Please fix the errors below:</strong>
+      {% for field in form %}{% for e in field.errors %}
+        <div style="font-size:.85rem;margin-top:.2rem;">{{ field.label }}: {{ e }}</div>
+      {% endfor %}{% endfor %}
+      {% for e in form.non_field_errors %}<div style="font-size:.85rem;margin-top:.2rem;">{{ e }}</div>{% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post" autocomplete="on">
+      {% csrf_token %}
+      <div class="row g-3">
+
+        <!-- Name -->
+        <div class="col-6">
+          <label class="form-label">First Name *</label>
+          {% render_field form.first_name class="form-control" placeholder="Rajan" %}
+        </div>
+        <div class="col-6">
+          <label class="form-label">Last Name *</label>
+          {% render_field form.last_name class="form-control" placeholder="Kumar" %}
+        </div>
+
+        <!-- Username & Email -->
+        <div class="col-12">
+          <label class="form-label">Username *</label>
+          {% render_field form.username class="form-control" placeholder="rajan123" autocomplete="username" %}
+        </div>
+        <div class="col-12">
+          <label class="form-label">Email</label>
+          {% render_field form.email class="form-control" placeholder="rajan@email.com" %}
+        </div>
+
+        <!-- Blood Type & Phone -->
+        <div class="col-6">
+          <label class="form-label">Blood Type *</label>
+          {% render_field form.blood_type class="form-select" %}
+        </div>
+        <div class="col-6">
+          <label class="form-label">Phone *</label>
+          {% render_field form.phone class="form-control" placeholder="9876543210" %}
+        </div>
+
+        <!-- City & State -->
+        <div class="col-6">
+          <label class="form-label">City</label>
+          {% render_field form.city class="form-control" placeholder="Chennai" %}
+        </div>
+        <div class="col-6">
+          <label class="form-label">State</label>
+          {% render_field form.state class="form-control" placeholder="Tamil Nadu" %}
+        </div>
+
+        <!-- Password -->
+        <div class="col-12">
+          <label class="form-label">Password * <span style="font-size:.78rem;color:var(--text-muted);">(min 8 characters)</span></label>
+          <div class="input-group">
+            {% render_field form.password1 class="form-control" id="reg-pw1" placeholder="Min 8 characters" autocomplete="new-password" %}
+            <button type="button" class="input-group-text" onclick="toggleRegPw('reg-pw1','eye1')" style="cursor:pointer;">
+              <i class="bi bi-eye" id="eye1"></i>
+            </button>
+          </div>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Confirm Password *</label>
+          <div class="input-group">
+            {% render_field form.password2 class="form-control" id="reg-pw2" placeholder="Repeat password" autocomplete="new-password" %}
+            <button type="button" class="input-group-text" onclick="toggleRegPw('reg-pw2','eye2')" style="cursor:pointer;">
+              <i class="bi bi-eye" id="eye2"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Health Declaration -->
+        <div class="col-12">
+          <div class="p-3 rounded-3" style="background:var(--bg-card2);border:1px solid var(--border);">
+            <p class="mb-1" style="font-size:.85rem;font-weight:600;color:var(--red);">
+              <i class="bi bi-heart-pulse me-1"></i> Health Declaration
+            </p>
+            <p class="mb-2" style="font-size:.78rem;color:var(--text-muted);">
+              Tick any conditions that apply. This helps ensure donor &amp; recipient safety.
+            </p>
+            <div class="row g-2">
+              <div class="col-6">
+                <div class="form-check">
+                  {% render_field form.has_hiv class="form-check-input" id="id_has_hiv" %}
+                  <label class="form-check-label" for="id_has_hiv" style="font-size:.84rem;">
+                    <strong>HIV / AIDS</strong>
+                  </label>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-check">
+                  {% render_field form.has_diabetes class="form-check-input" id="id_has_diabetes" %}
+                  <label class="form-check-label" for="id_has_diabetes" style="font-size:.84rem;">
+                    <strong>Diabetes</strong>
+                  </label>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-check">
+                  {% render_field form.has_sugar class="form-check-input" id="id_has_sugar" %}
+                  <label class="form-check-label" for="id_has_sugar" style="font-size:.84rem;">
+                    <strong>High Blood Sugar</strong>
+                  </label>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-check">
+                  {% render_field form.has_skin_disease class="form-check-input" id="id_has_skin_disease" %}
+                  <label class="form-check-label" for="id_has_skin_disease" style="font-size:.84rem;">
+                    <strong>Skin Disease</strong>
+                  </label>
+                </div>
+              </div>
+              <div class="col-12 mt-1" style="border-top:1px solid var(--border);padding-top:.6rem;">
+                <div class="form-check">
+                  {% render_field form.covid_vaccinated class="form-check-input" id="id_covid_vaccinated" %}
+                  <label class="form-check-label" for="id_covid_vaccinated" style="font-size:.84rem;">
+                    💉 I am <strong>COVID-19 Vaccinated</strong>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Terms & Conditions -->
+        <div class="col-12">
+          <div class="form-check">
+            {% render_field form.terms class="form-check-input" id="id_terms" %}
+            <label class="form-check-label" for="id_terms" style="font-size:.85rem;">
+              I agree to the
+              <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" style="color:var(--red);font-weight:600;">
+                Terms &amp; Conditions
+              </a> *
+            </label>
+            {% if form.terms.errors %}
+              <div class="text-danger" style="font-size:.78rem;">{{ form.terms.errors.0 }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+      </div><!-- /.row -->
+
+      <!-- Privacy note -->
+      <div class="mt-3 p-3 rounded-3" style="background:var(--bg-card2);border:1px solid var(--border);font-size:.82rem;color:var(--text-muted);">
+        <i class="bi bi-shield-check me-1" style="color:var(--red);"></i>
+        Your data is secure. BloodLink never shares personal information without consent.
+      </div>
+
+      <button type="submit" class="btn-blood w-100 mt-3" style="justify-content:center;padding:.85rem;">
+        <i class="bi bi-person-check"></i> Create Account &amp; Join
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      Already have an account? <a href="{% url 'login' %}" style="font-weight:600;">Login →</a>
+    </div>
+  </div>
+</div>
+
+<!-- Terms & Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border);">
+      <div class="modal-header" style="border-bottom:1px solid var(--border);">
+        <h5 class="modal-title" id="termsModalLabel">
+          <i class="bi bi-file-text me-2" style="color:var(--red);"></i>Terms &amp; Conditions
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="font-size:.88rem;line-height:1.7;">
+        <p><strong>1. Eligibility</strong><br>
+        You must be at least 18 years old and in good health to register as a donor on BloodLink.</p>
+        <p><strong>2. Health Disclosure</strong><br>
+        You agree to truthfully disclose any medical conditions including HIV/AIDS, diabetes, high blood sugar, skin diseases, or other conditions that may affect blood donation safety. Providing false information may endanger recipients.</p>
+        <p><strong>3. Voluntary Participation</strong><br>
+        Blood donation through BloodLink is entirely voluntary. You may withdraw your availability at any time from your dashboard.</p>
+        <p><strong>4. Privacy</strong><br>
+        Your personal data is stored securely and will never be sold or shared with third parties without your explicit consent. Contact details are only shared with verified recipients during an active blood request.</p>
+        <p><strong>5. Platform Use</strong><br>
+        BloodLink is a platform to connect donors and recipients. We do not provide medical advice. Always consult a qualified medical professional before donating.</p>
+        <p><strong>6. Accuracy of Information</strong><br>
+        You are responsible for keeping your profile information accurate and up to date, including blood type, availability, and contact details.</p>
+        <p><strong>7. Amendments</strong><br>
+        BloodLink reserves the right to update these terms at any time. Continued use of the platform constitutes acceptance of the updated terms.</p>
+      </div>
+      <div class="modal-footer" style="border-top:1px solid var(--border);">
+        <button type="button" class="btn-blood" data-bs-dismiss="modal" style="padding:.5rem 1.5rem;">
+          <i class="bi bi-check-circle me-1"></i> I Understand
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleRegPw(fieldId, eyeId) {
+  const pw  = document.getElementById(fieldId);
+  const eye = document.getElementById(eyeId);
+  pw.type = pw.type === 'password' ? 'text' : 'password';
+  eye.className = pw.type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
+}
+</script>
+{% endblock %}

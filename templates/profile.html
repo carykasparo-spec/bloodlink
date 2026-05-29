@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block title %}Edit Profile{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="mb-4">
+    <div class="section-label">Account</div>
+    <h1 style="font-family:'Playfair Display',serif;color:var(--text)">Edit Profile</h1>
+  </div>
+  <div class="col-lg-7 mx-auto">
+    <div class="card p-4 p-md-5">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">First Name</label>
+            <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}"/>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Last Name</label>
+            <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}"/>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" value="{{ user.email }}"/>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Blood Type</label>
+            {% render_field form.blood_type class="form-select" %}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Phone</label>
+            {% render_field form.phone class="form-control" placeholder="+91 XXXXXXXXXX" %}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">City</label>
+            {% render_field form.city class="form-control" %}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">State</label>
+            {% render_field form.state class="form-control" %}
+          </div>
+          <div class="col-12">
+            <label class="form-label">Bio</label>
+            {% render_field form.bio class="form-control" placeholder="Tell donors a bit about yourself..." %}
+          </div>
+          <div class="col-12">
+            <label class="form-label">Profile Photo</label>
+            {% render_field form.avatar class="form-control" %}
+          </div>
+          <div class="col-12">
+            <div class="form-check">
+              {% render_field form.is_available class="form-check-input" id="id_is_available" %}
+              <label class="form-check-label" for="id_is_available" style="color:var(--text)">I am available to donate blood</label>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn-blood mt-4 w-100 justify-content-center">
+          <i class="bi bi-check-circle"></i> Save Changes
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Photo Gallery — BloodLink Events{% endblock %}
+{% block content %}
+
+<!-- Hero -->
+<section style="background:var(--bg-card2);border-bottom:1px solid var(--border);padding:4rem 0;position:relative;overflow:hidden;">
+  <canvas id="particle-canvas"></canvas>
+  <div class="hero-glow-1"></div>
+  <div class="container text-center" style="position:relative;z-index:1;">
+    <div class="section-label">Latest Moments</div>
+    <h1 class="section-title">Events Gallery</h1>
+    <p class="section-sub mx-auto">Photos from our blood donation camps, drives, and community events across India</p>
+  </div>
+</section>
+
+<div class="container py-5">
+
+  <!-- Admin upload (staff only) -->
+  {% if upload_form %}
+  <div class="card p-4 mb-5">
+    <h5 style="font-family:'Playfair Display',serif;color:var(--text);margin-bottom:1.5rem">
+      <i class="bi bi-cloud-upload me-2"></i>Upload Event Photo
+    </h5>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Title *</label>
+          <input type="text" name="title" class="form-control" required placeholder="Blood Donation Camp — Chennai">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Event Date</label>
+          <input type="date" name="event_date" class="form-control">
+        </div>
+        <div class="col-12">
+          <label class="form-label">Description</label>
+          <textarea name="description" class="form-control" rows="2" placeholder="Briefly describe the event..."></textarea>
+        </div>
+        <div class="col-md-8">
+          <label class="form-label">Photo *</label>
+          <input type="file" name="image" class="form-control" accept="image/*" required>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" name="is_featured" id="feat">
+            <label class="form-check-label" for="feat">Featured photo</label>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn-blood mt-3"><i class="bi bi-upload"></i> Upload Photo</button>
+    </form>
+  </div>
+  {% endif %}
+
+  {% if photos %}
+    <!-- Featured section -->
+    {% if featured %}
+    <div class="mb-5">
+      <div class="section-label mb-2">Featured</div>
+      <h3 class="section-title mb-4" style="font-size:1.8rem;">Highlights</h3>
+      <div class="row g-3 mb-2">
+        {% for p in featured %}
+        <div class="col-md-{% if forloop.first %}6{% else %}3{% endif %}">
+          <div class="gallery-item {% if forloop.first %}h-100{% endif %}" style="{% if forloop.first %}aspect-ratio:16/9;{% endif %}">
+            <img src="{{ p.image.url }}" class="gallery-img" alt="{{ p.title }}" data-caption="{{ p.title }}{% if p.event_date %} · {{ p.event_date }}{% endif %}">
+            <div class="gallery-overlay">
+              <div class="gallery-overlay-title">{{ p.title }}</div>
+              {% if p.event_date %}<div class="gallery-overlay-date">{{ p.event_date }}</div>{% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- All photos -->
+    <div class="section-label mb-2">All Photos</div>
+    <h3 class="section-title mb-4" style="font-size:1.8rem;">{{ photos|length }} Photo{{ photos|length|pluralize }}</h3>
+    <div class="gallery-grid">
+      {% for p in photos %}
+      <div class="gallery-item">
+        <img src="{{ p.image.url }}" class="gallery-img" alt="{{ p.title }}" data-caption="{{ p.title }}{% if p.event_date %} · {{ p.event_date }}{% endif %}">
+        <div class="gallery-overlay">
+          <div class="gallery-overlay-title">{{ p.title }}</div>
+          {% if p.event_date %}<div class="gallery-overlay-date"><i class="bi bi-calendar3 me-1"></i>{{ p.event_date }}</div>{% endif %}
+          {% if p.description %}<div class="gallery-overlay-date">{{ p.description|truncatechars:50 }}</div>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  {% else %}
+    <!-- Empty state -->
+    <div class="text-center py-5">
+      <div style="font-size:4rem;margin-bottom:1.5rem;">📸</div>
+      <h3 style="color:var(--text);font-family:'Playfair Display',serif;">No Photos Yet</h3>
+      <p style="color:var(--text-muted);max-width:400px;margin:.75rem auto;">
+        Photos from blood donation events and camps will appear here.
+        {% if user.is_staff %}Admin: Upload photos above to populate the gallery.{% endif %}
+      </p>
+      {% if not user.is_staff %}
+      <p style="color:var(--text-muted);font-size:.88rem;">Admin can upload event photos from this page.</p>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

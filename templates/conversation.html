@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Chat with {{ other_user.username }}{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="col-lg-7 mx-auto">
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <a href="{% url 'inbox' %}" style="color:var(--text-muted)"><i class="bi bi-arrow-left"></i></a>
+      <h4 style="font-family:'Playfair Display',serif;color:var(--text);margin:0">{{ other_user.get_full_name|default:other_user.username }}</h4>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;height:70vh">
+      <div style="flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:.75rem;background:var(--bg)">
+        {% for msg in messages %}
+        <div style="max-width:75%;{% if msg.sender == user %}align-self:flex-end{% else %}align-self:flex-start{% endif %}">
+          <div style="padding:.65rem 1rem;border-radius:18px;font-size:.9rem;
+            {% if msg.sender == user %}
+              background:var(--red);color:#fff;border-bottom-right-radius:4px
+            {% else %}
+              background:var(--bg-card);color:var(--text);border:1px solid var(--border);border-bottom-left-radius:4px
+            {% endif %}
+          ">{{ msg.content }}</div>
+          <div style="font-size:.72rem;color:var(--text-muted);margin-top:.25rem;{% if msg.sender == user %}text-align:right{% endif %}">{{ msg.timestamp|date:"g:i A" }}</div>
+        </div>
+        {% empty %}
+        <div style="text-align:center;color:var(--text-muted);margin:auto">Start your conversation below!</div>
+        {% endfor %}
+      </div>
+      <div style="padding:1rem;border-top:1px solid var(--border);background:var(--bg-card)">
+        <form method="post" style="display:flex;gap:.75rem">
+          {% csrf_token %}
+          <input type="text" name="content" class="form-control" placeholder="Type a message…" required autofocus style="flex:1"/>
+          <button type="submit" class="btn-blood" style="flex-shrink:0"><i class="bi bi-send"></i></button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

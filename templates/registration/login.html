@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">🩸</div>
+    <h2 class="auth-title">Welcome Back</h2>
+    <p class="auth-sub">Login to BloodLink and save lives today</p>
+
+    {% if messages %}
+      {% for msg in messages %}
+      <div class="alert alert-{{ msg.tags|default:'info' }} d-flex align-items-center gap-2 mb-3">
+        <i class="bi bi-info-circle-fill flex-shrink-0"></i>
+        <span>{{ msg }}</span>
+      </div>
+      {% endfor %}
+    {% endif %}
+
+    {% if error %}
+    <div class="alert alert-danger d-flex align-items-center gap-2 mb-3">
+      <i class="bi bi-exclamation-circle-fill flex-shrink-0"></i>
+      <span>{{ error }}</span>
+    </div>
+    {% endif %}
+
+    <!-- Tab switcher -->
+    <div class="login-tabs mb-4">
+      <button class="login-tab active" id="tab-password" onclick="switchTab('password')">
+        <i class="bi bi-lock me-1"></i> Password
+      </button>
+      <button class="login-tab" id="tab-otp" onclick="switchTab('otp')">
+        <i class="bi bi-phone me-1"></i> OTP Login
+      </button>
+    </div>
+
+    <!-- PASSWORD LOGIN -->
+    <div id="panel-password">
+      <form method="post" autocomplete="on">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-person"></i></span>
+            <input type="text" name="username" class="form-control" required autofocus
+                   placeholder="Your username" autocomplete="username">
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="form-label">Password</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+            <input type="password" name="password" id="pw" class="form-control" required
+                   placeholder="••••••••" autocomplete="current-password">
+            <button type="button" class="input-group-text" onclick="togglePw()" style="cursor:pointer;">
+              <i class="bi bi-eye" id="pw-eye"></i>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="btn-blood w-100" style="justify-content:center;padding:.85rem;">
+          <i class="bi bi-box-arrow-in-right"></i> Login
+        </button>
+      </form>
+    </div>
+
+    <!-- OTP LOGIN -->
+    <div id="panel-otp" style="display:none;">
+      <!-- Step 1: enter phone -->
+      <div id="otp-step1">
+        <p style="font-size:.88rem;color:var(--text-muted);margin-bottom:1rem;">
+          Enter your registered phone number. We'll send a 6-digit OTP via SMS.
+        </p>
+        <div class="mb-3">
+          <label class="form-label">Phone Number</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-phone"></i></span>
+            <input type="tel" id="otp-phone" class="form-control" placeholder="9876543210" maxlength="15">
+          </div>
+          <div id="otp-phone-err" style="color:#e74c3c;font-size:.82rem;margin-top:.3rem;display:none;"></div>
+        </div>
+        <button class="btn-blood w-100" style="justify-content:center;padding:.85rem;" onclick="requestOTP()">
+          <i class="bi bi-send"></i> Send OTP
+        </button>
+      </div>
+
+      <!-- Step 2: enter OTP -->
+      <div id="otp-step2" style="display:none;">
+        <div class="alert alert-success d-flex align-items-center gap-2 mb-3">
+          <i class="bi bi-check-circle-fill"></i>
+          <span id="otp-sent-msg">OTP sent!</span>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Enter 6-digit OTP</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+            <input type="text" id="otp-code" class="form-control" placeholder="123456"
+                   maxlength="6" inputmode="numeric" pattern="[0-9]*">
+          </div>
+          <div id="otp-code-err" style="color:#e74c3c;font-size:.82rem;margin-top:.3rem;display:none;"></div>
+        </div>
+        <button class="btn-blood w-100 mb-2" style="justify-content:center;padding:.85rem;" onclick="verifyLoginOTP()">
+          <i class="bi bi-check2-circle"></i> Verify & Login
+        </button>
+        <button class="btn-outline-blood w-100" style="justify-content:center;padding:.7rem;" onclick="resendOTP()">
+          <i class="bi bi-arrow-clockwise"></i> Resend OTP
+        </button>
+      </div>
+    </div>
+
+    <div class="auth-footer">
+      New here? <a href="{% url 'register' %}" style="font-weight:600;">Create an account →</a>
+    </div>
+  </div>
+</div>
+
+<style>
+.login-tabs {
+  display: flex;
+  gap: .5rem;
+  background: var(--bg-card2);
+  border-radius: 12px;
+  padding: .3rem;
+  border: 1px solid var(--border);
+}
+.login-tab {
+  flex: 1;
+  padding: .55rem;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: .88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .2s;
+}
+.login-tab.active {
+  background: var(--red);
+  color: #fff;
+  font-weight: 600;
+}
+</style>
+
+<script>
+function togglePw() {
+  const pw  = document.getElementById('pw');
+  const eye = document.getElementById('pw-eye');
+  pw.type = pw.type === 'password' ? 'text' : 'password';
+  eye.className = pw.type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
+}
+
+function switchTab(tab) {
+  document.getElementById('panel-password').style.display = tab === 'password' ? '' : 'none';
+  document.getElementById('panel-otp').style.display      = tab === 'otp' ? '' : 'none';
+  document.getElementById('tab-password').classList.toggle('active', tab === 'password');
+  document.getElementById('tab-otp').classList.toggle('active', tab === 'otp');
+}
+
+let otpPhone = '';
+
+async function requestOTP() {
+  const raw = document.getElementById('otp-phone').value.trim();
+  const errEl = document.getElementById('otp-phone-err');
+  errEl.style.display = 'none';
+
+  if (!raw || raw.length < 10) {
+    errEl.textContent = 'Please enter a valid 10-digit phone number.';
+    errEl.style.display = 'block';
+    return;
+  }
+  otpPhone = raw.startsWith('+') ? raw : '+91' + raw;
+
+  const btn = event.currentTarget;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sending…';
+
+  try {
+    const res = await fetch('/send-otp/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': getCsrf() },
+      body: 'phone=' + encodeURIComponent(raw)
+    });
+    const data = await res.json();
+    if (data.ok) {
+      document.getElementById('otp-step1').style.display = 'none';
+      document.getElementById('otp-step2').style.display = '';
+      if (data.sms_sent === false && data.dev_code) {
+        document.getElementById('otp-sent-msg').textContent =
+          `SMS unavailable — your OTP is: ${data.dev_code}`;
+        document.getElementById('otp-sent-msg').closest('.alert').className =
+          'alert alert-warning d-flex align-items-center gap-2 mb-3';
+        document.getElementById('otp-code').value = data.dev_code;
+      } else {
+        document.getElementById('otp-sent-msg').textContent = `OTP sent to ${otpPhone}`;
+      }
+    } else {
+      errEl.textContent = data.error || 'Failed to send OTP. Please try again.';
+      errEl.style.display = 'block';
+    }
+  } catch(e) {
+    errEl.textContent = 'Network error. Please try again.';
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-send"></i> Send OTP';
+  }
+}
+
+async function verifyLoginOTP() {
+  const code = document.getElementById('otp-code').value.trim();
+  const errEl = document.getElementById('otp-code-err');
+  errEl.style.display = 'none';
+
+  if (!/^\d{6}$/.test(code)) {
+    errEl.textContent = 'Enter the 6-digit OTP sent to your phone.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const btn = event.currentTarget;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Verifying…';
+
+  try {
+    const res = await fetch('/login-otp/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': getCsrf() },
+      body: 'phone=' + encodeURIComponent(otpPhone) + '&code=' + encodeURIComponent(code)
+    });
+    const data = await res.json();
+    if (data.ok) {
+      window.location.href = data.redirect || '/dashboard/';
+    } else {
+      errEl.textContent = data.error || 'Invalid or expired OTP.';
+      errEl.style.display = 'block';
+    }
+  } catch(e) {
+    errEl.textContent = 'Network error. Please try again.';
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-check2-circle"></i> Verify & Login';
+  }
+}
+
+async function resendOTP() {
+  document.getElementById('otp-step1').style.display = '';
+  document.getElementById('otp-step2').style.display = 'none';
+  document.getElementById('otp-phone').value = otpPhone.replace('+91','');
+}
+
+function getCsrf() {
+  const v = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
+  return v ? v.pop() : '';
+}
+</script>
+{% endblock %}

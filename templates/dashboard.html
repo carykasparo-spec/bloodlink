@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="mb-4">
+    <div class="section-label">Welcome back</div>
+    <h1 style="font-family:'Playfair Display',serif;color:var(--text)">
+      {{ user.first_name|default:user.username }}'s Dashboard
+    </h1>
+  </div>
+
+  <div class="row g-4">
+    <!-- Profile Card -->
+    <div class="col-lg-4">
+      <div class="donor-card h-100">
+        <div class="text-center mb-3">
+          {% if profile.avatar %}
+          <img src="{{ profile.avatar.url }}" class="rounded-circle mb-3" style="width:90px;height:90px;object-fit:cover;border:3px solid var(--red)"/>
+          {% else %}
+          <div style="width:90px;height:90px;border-radius:50%;background:var(--red-glow);border:3px solid var(--red);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 1rem">👤</div>
+          {% endif %}
+          <h4 style="font-family:'Playfair Display',serif;color:var(--text)">{{ user.get_full_name|default:user.username }}</h4>
+          <div class="donor-meta">{{ user.email }}</div>
+          {% if profile.badge != 'none' %}
+          <span class="badge-blood mt-2 d-inline-block">{{ profile.get_badge_display }}</span>
+          {% endif %}
+        </div>
+        <hr class="divider">
+        <div class="row text-center g-3">
+          <div class="col-6">
+            <div class="blood-type-badge mx-auto mb-2">{{ profile.blood_type }}</div>
+            <div style="font-size:.8rem;color:var(--text-muted)">Blood Type</div>
+          </div>
+          <div class="col-6">
+            <div style="font-size:2rem;font-weight:700;color:var(--red);font-family:'Playfair Display',serif">{{ profile.donation_count }}</div>
+            <div style="font-size:.8rem;color:var(--text-muted)">Donations</div>
+          </div>
+        </div>
+        <hr class="divider">
+        {% if profile.city %}<div class="donor-meta mb-1"><i class="bi bi-geo-alt me-1"></i>{{ profile.city }}{% if profile.state %}, {{ profile.state }}{% endif %}</div>{% endif %}
+        {% if profile.phone %}<div class="donor-meta"><i class="bi bi-telephone me-1"></i>{{ profile.phone }}</div>{% endif %}
+        <div class="mt-3">
+          <span style="font-size:.85rem;color:{% if profile.is_available %}#27ae60{% else %}var(--text-muted){% endif %}">
+            <i class="bi bi-circle-fill me-1" style="font-size:.6rem"></i>
+            {% if profile.is_available %}Available to donate{% else %}Not available{% endif %}
+          </span>
+        </div>
+        <a href="{% url 'profile' %}" class="btn-outline-blood mt-3 d-block text-center">Edit Profile</a>
+      </div>
+    </div>
+
+    <!-- Right side -->
+    <div class="col-lg-8">
+      <!-- Quick actions -->
+      <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-md-3">
+          <a href="{% url 'search_donors' %}" class="card text-center p-3 text-decoration-none h-100">
+            <div style="font-size:1.8rem">🔍</div>
+            <div style="font-size:.85rem;font-weight:600;color:var(--text)">Find Donors</div>
+          </a>
+        </div>
+        <div class="col-sm-6 col-md-3">
+          <a href="{% url 'request_blood' %}" class="card text-center p-3 text-decoration-none h-100">
+            <div style="font-size:1.8rem">🩸</div>
+            <div style="font-size:.85rem;font-weight:600;color:var(--text)">Request Blood</div>
+          </a>
+        </div>
+        <div class="col-sm-6 col-md-3">
+          <a href="{% url 'donation_history' %}" class="card text-center p-3 text-decoration-none h-100">
+            <div style="font-size:1.8rem">📋</div>
+            <div style="font-size:.85rem;font-weight:600;color:var(--text)">Log Donation</div>
+          </a>
+        </div>
+        <div class="col-sm-6 col-md-3">
+          <a href="{% url 'inbox' %}" class="card text-center p-3 text-decoration-none h-100">
+            <div style="font-size:1.8rem">💬</div>
+            <div style="font-size:.85rem;font-weight:600;color:var(--text)">
+              Messages
+              {% if unread_count %}<span class="badge-blood ms-1" style="font-size:.7rem">{{ unread_count }}</span>{% endif %}
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recent donations -->
+      <div class="card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 style="font-family:'Playfair Display',serif;color:var(--text);margin:0">Recent Donations</h5>
+          <a href="{% url 'donation_history' %}" style="font-size:.85rem;color:var(--red)">View all →</a>
+        </div>
+        {% if donations %}
+        <div class="table-responsive">
+          <table class="table table-striped mb-0">
+            <thead><tr><th>Date</th><th>Location</th><th>Units</th></tr></thead>
+            <tbody>
+              {% for d in donations %}
+              <tr>
+                <td>{{ d.date }}</td>
+                <td>{{ d.location }}</td>
+                <td>{{ d.units }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p style="color:var(--text-muted);text-align:center;padding:1rem">No donations recorded yet. <a href="{% url 'donation_history' %}">Log your first!</a></p>
+        {% endif %}
+      </div>
+
+      <!-- My requests -->
+      <div class="card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 style="font-family:'Playfair Display',serif;color:var(--text);margin:0">My Blood Requests</h5>
+          <a href="{% url 'request_blood' %}" style="font-size:.85rem;color:var(--red)">New request →</a>
+        </div>
+        {% if my_requests %}
+        {% for req in my_requests %}
+        <div style="padding:.75rem 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:600;color:var(--text)">{{ req.blood_type }} — {{ req.hospital }}</div>
+            <div style="font-size:.83rem;color:var(--text-muted)">{{ req.city }} · {{ req.created_at|date:"M d, Y" }}</div>
+          </div>
+          <span class="badge-blood {% if req.status == 'fulfilled' %}" style="background:#27ae60{% endif %}">{{ req.get_status_display }}</span>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p style="color:var(--text-muted);text-align:center;padding:1rem">No requests yet. <a href="{% url 'request_blood' %}">Create one</a></p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

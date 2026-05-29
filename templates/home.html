@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+
+<!-- ── Hero with particles ── -->
+<section class="hero">
+  <canvas id="particle-canvas"></canvas>
+  <div class="hero-glow-1"></div>
+  <div class="hero-glow-2"></div>
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <div class="hero-eyebrow reveal">🩸 India's Blood Donation Network</div>
+        <h1 class="reveal reveal-delay-1">Give Blood,<br><span>Save Lives.</span></h1>
+        <p class="hero-desc reveal reveal-delay-2">
+          Connect with verified blood donors in your city instantly.
+          Every donation counts — be the reason someone gets a second chance at life.
+        </p>
+        <div class="d-flex gap-3 flex-wrap reveal reveal-delay-3">
+          <a href="{% url 'search_donors' %}" class="btn-blood">
+            <i class="bi bi-search-heart"></i> Find a Donor
+          </a>
+          <a href="{% url 'register' %}" class="btn-outline-blood">
+            <i class="bi bi-person-plus"></i> Become a Donor
+          </a>
+        </div>
+        <div class="hero-stats reveal reveal-delay-4">
+          <div>
+            <span class="hero-stat-num" id="counter-donors" data-target="{{ donor_count }}">0+</span>
+            <span class="hero-stat-label">Active Donors</span>
+          </div>
+          <div>
+            <span class="hero-stat-num" id="counter-donations" data-target="{{ donation_count }}">0+</span>
+            <span class="hero-stat-label">Donations Made</span>
+          </div>
+          <div>
+            <span class="hero-stat-num" id="counter-requests" data-target="{{ request_count }}">0</span>
+            <span class="hero-stat-label">Open Requests</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 d-none d-lg-block">
+        <div class="hero-visual reveal reveal-delay-2">
+          <div class="hero-card-stack">
+            <div class="hc hc1">
+              <div class="blood-type-badge">O+</div>
+              <div>
+                <div style="font-weight:600;color:var(--text);">Most In Demand</div>
+                <div style="font-size:.82rem;color:var(--text-muted);">Universal Donor · Always Needed</div>
+              </div>
+              <span class="badge-blood ms-auto">🏆 Hero</span>
+            </div>
+            <div class="hc hc2">
+              <div class="blood-type-badge" style="background:linear-gradient(135deg,#8e44ad,#6c3483);">AB+</div>
+              <div>
+                <div style="font-weight:600;color:var(--text);">Universal Receiver</div>
+                <div style="font-size:.82rem;color:var(--text-muted);">Can receive any blood type</div>
+              </div>
+              <span class="badge-blood ms-auto">❤️ Lifesaver</span>
+            </div>
+            <div class="hc hc3">
+              <div class="blood-type-badge" style="background:linear-gradient(135deg,#e67e22,#d35400);">B-</div>
+              <div>
+                <div style="font-weight:600;color:var(--text);">Rare Type</div>
+                <div style="font-size:.82rem;color:var(--text-muted);">Only 2% of population</div>
+              </div>
+              <span class="badge-blood ms-auto" style="background:#e67e22;">🚨 Critical</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── How it works ── -->
+<section style="background:var(--bg-card2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="text-center mb-5 reveal">
+      <div class="section-label">Simple & Fast</div>
+      <h2 class="section-title">How BloodLink Works</h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4 reveal reveal-delay-1">
+        <div class="card h-100 text-center p-4">
+          <div class="feature-icon mx-auto">🔍</div>
+          <h4 class="card-title">1. Search Donors</h4>
+          <p class="card-text">Filter by blood type and city to find verified donors near you instantly.</p>
+        </div>
+      </div>
+      <div class="col-md-4 reveal reveal-delay-2">
+        <div class="card h-100 text-center p-4">
+          <div class="feature-icon mx-auto">💬</div>
+          <h4 class="card-title">2. Connect Directly</h4>
+          <p class="card-text">Message donors in real-time through our secure chat system.</p>
+        </div>
+      </div>
+      <div class="col-md-4 reveal reveal-delay-3">
+        <div class="card h-100 text-center p-4">
+          <div class="feature-icon mx-auto">🩸</div>
+          <h4 class="card-title">3. Save a Life</h4>
+          <p class="card-text">Coordinate the donation and earn badges for every life you help save.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Features ── -->
+<section>
+  <div class="container">
+    <div class="text-center mb-5 reveal">
+      <div class="section-label">Why BloodLink?</div>
+      <h2 class="section-title">Built for Emergencies</h2>
+      <p class="section-sub mx-auto">Trusted by 48,000+ donors across 29 Indian states</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-1"><div class="card h-100"><div class="card-body"><div class="feature-icon">⚡</div><h5 class="card-title">Instant Matching</h5><p class="card-text">Real-time system matches donors within minutes using blood type and location.</p></div></div></div>
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-2"><div class="card h-100"><div class="card-body"><div class="feature-icon">💬</div><h5 class="card-title">Direct Chat</h5><p class="card-text">Real-time WebSocket messaging between donors and recipients. No middleman.</p></div></div></div>
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-3"><div class="card h-100"><div class="card-body"><div class="feature-icon">🏅</div><h5 class="card-title">Badges & Certificates</h5><p class="card-text">Earn badges for every donation and download beautiful e-certificates.</p></div></div></div>
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-1"><div class="card h-100"><div class="card-body"><div class="feature-icon">🤖</div><h5 class="card-title">AI BloodBot</h5><p class="card-text">Gemini-powered assistant answers eligibility and donation questions 24/7.</p></div></div></div>
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-2"><div class="card h-100"><div class="card-body"><div class="feature-icon">📸</div><h5 class="card-title">Events Gallery</h5><p class="card-text">Browse our latest donation camps, events, and community moments.</p></div></div></div>
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-3"><div class="card h-100"><div class="card-body"><div class="feature-icon">🚨</div><h5 class="card-title">Emergency Requests</h5><p class="card-text">Post urgent blood requests that notify all available donors in your city instantly.</p></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA Banner ── -->
+<section style="background:linear-gradient(135deg,var(--red),var(--red-dark));padding:4rem 0;">
+  <div class="container text-center reveal">
+    <h2 style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:800;color:#fff;margin-bottom:1rem;">
+      Ready to Save a Life?
+    </h2>
+    <p style="color:rgba(255,255,255,.85);font-size:1.1rem;margin-bottom:2rem;font-weight:300;">
+      Join 48,000+ donors making a difference across India — registration takes 2 minutes.
+    </p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <a href="{% url 'register' %}" class="btn-blood" style="background:#fff;color:var(--red)!important;box-shadow:0 6px 24px rgba(0,0,0,.2);">
+        <i class="bi bi-person-plus"></i> Register Now — It's Free
+      </a>
+      <a href="{% url 'search_donors' %}" class="btn-outline-blood" style="border-color:rgba(255,255,255,.6);color:#fff!important;">
+        <i class="bi bi-search-heart"></i> Find Donors
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
